@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поиск Идеальной Пары ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            overflow: hidden;
+            color: #4a4a4a;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            color: #ff6b81;
+            margin-bottom: 20px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #f0f0f0;
+            border-radius: 12px;
+            box-sizing: border-box;
+            font-family: inherit;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        input:focus, textarea:focus {
+            border-color: #ff9a9e;
+            outline: none;
+        }
+
+        /* Общий стиль для кнопок */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px 0;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: none;
+            text-decoration: none;
+            box-sizing: border-box;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Розовая кнопка (поиск) */
+        .btn-pink {
+            background: #ff6b81;
+            color: white;
+        }
+        .btn-pink:hover {
+            box-shadow: 0 5px 15px rgba(255, 107, 129, 0.4);
+        }
+
+        /* Кнопка Telegram */
+        .btn-tg {
+            background: #229ED9; /* Официальный цвет Telegram */
+            color: white;
+        }
+        .btn-tg:hover {
+            box-shadow: 0 5px 15px rgba(34, 158, 217, 0.4);
+        }
+
+        /* Кнопка сброса (попроще) */
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #888;
+            font-size: 14px;
+            padding: 10px 0;
+        }
+
+        /* Анимация загрузки */
+        .hidden {
+            display: none;
+        }
+
+        .loader {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .heart-beat {
+            font-size: 50px;
+            color: #ff6b81;
+            animation: beat 1s infinite alternate;
+        }
+
+        @keyframes beat {
+            to { transform: scale(1.2); }
+        }
+
+        .status-text {
+            margin-top: 15px;
+            font-size: 18px;
+            color: #888;
+        }
+
+        /* Результат */
+        .result-card img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid #ff9a9e;
+            margin-bottom: 15px;
+        }
+
+        .match-percent {
+            font-size: 24px;
+            color: #ff6b81;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .details {
+            font-size: 16px;
+            color: #555;
+            background: #fff0f3;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* Фон с сердечками */
+        .bg-hearts {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.6);
+            animation: float 6s linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(110vh) rotate(0deg); }
+            100% { transform: translateY(-10vh) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-hearts" id="bg-hearts"></div>
+
+    <div class="container">
+        
+        <div id="step-1">
+            <h1>❤️ Найти пару ❤️</h1>
+            <p>Умный алгоритм проанализирует твою ауру и найдет идеального спутника.</p>
+            <input type="text" id="name" placeholder="Твое имя">
+            <input type="date" id="dob" placeholder="Дата рождения">
+            <textarea rows="3" placeholder="Расскажи немного о себе..."></textarea>
+            <button class="btn btn-pink" onclick="startSearch()">Найти судьбу</button>
+        </div>
+
+        <div id="step-2" class="hidden loader">
+            <div class="heart-beat">❤️</div>
+            <p id="status-text" class="status-text">Анализ совместимости...</p>
+            <div style="width: 100%; background: #eee; height: 10px; border-radius: 5px; margin-top: 20px; overflow: hidden;">
+                <div id="progress-bar" style="width: 0%; height: 100%; background: #ff6b81; transition: width 0.3s;"></div>
+            </div>
+        </div>
+
+        <div id="step-3" class="hidden result-card">
+            <h1>✨ It's a Match! ✨</h1>
+            
+            <img src="https://vk.com/photo365719231_457243459" alt="Ideal Match"> 
+            
+            <h2>Дэниал Поплавский</h2>
+            <div class="match-percent">Совместимость: 100%</div>
+            
+            <div class="details">
+                <p>🎂 <b>Дата рождения:</b> 04.10.2004</p>
+                <p>💫 <b>Статус:</b> Твоя идеальная судьба</p>
+            </div>
+            
+            <a href="https://t.me/dpmaybe" target="_blank" class="btn btn-tg">
+                Написать в Telegram ✈️
+            </a>
+
+            <button class="btn btn-secondary" onclick="location.reload()">Попробовать снова</button>
+        </div>
+
+    </div>
+
+    <script>
+        function createHearts() {
+            const container = document.getElementById('bg-hearts');
+            for (let i = 0; i < 20; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerHTML = '❤️';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                container.appendChild(heart);
+            }
+        }
+        createHearts();
+
+        function startSearch() {
+            const nameInput = document.getElementById('name').value;
+            if (!nameInput) {
+                alert("Пожалуйста, введи хотя бы имя!");
+                return;
+            }
+
+            document.getElementById('step-1').classList.add('hidden');
+            document.getElementById('step-2').classList.remove('hidden');
+
+            const statusText = document.getElementById('status-text');
+            const progressBar = document.getElementById('progress-bar');
+            
+            let progress = 0;
+            const messages = [
+                "Анализ совместимости...",
+                "Сканирование звездных карт...",
+                "Обработка психологического портрета...",
+                "Поиск в глобальной базе...",
+                "Идеальное совпадение найдено!"
+            ];
+
+            let step = 0;
+            
+            const interval = setInterval(() => {
+                progress += 2; 
+                progressBar.style.width = progress + '%';
+
+                if (progress % 20 === 0 && step < messages.length) {
+                    statusText.innerText = messages[step];
+                    step++;
+                }
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    showResult();
+                }
+            }, 60); 
+        }
+
+        function showResult() {
+            document.getElementById('step-2').classList.add('hidden');
+            document.getElementById('step-3').classList.remove('hidden');
+            createHearts(); 
+        }
+    </script>
+</body>
+</html>
